@@ -1,0 +1,109 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; background-color: #0000007a}
+			canvas { width: 100%; height: 100%;}
+			#startButton {
+			    border: 1px solid black;
+			    border-radius: 0px;
+			    background: #d0d0d0;
+			    align-self: center;
+			    margin: 5em;
+			    background-color: #90909000;
+			    cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+
+		<button id="startButton">Click to Play</button>
+
+		<script src="js/three.min.js"></script>
+		<script>
+
+			var startButton = document.getElementById( 'startButton' );
+			startButton.addEventListener( 'click', init );
+
+			// function initTest() {
+				
+			// 	startButton.parentNode.removeChild(startButton);
+			// 	document.body.style.background = 'white';
+			// }
+
+			var camera, scene, renderer;
+			var mesh;
+
+			function init() {
+				
+				startButton.parentNode.removeChild(startButton);
+				
+				//Hexadecimal color (recommended)
+				var white = new THREE.Color( 0xffffff );
+				var backgroundTexture = new THREE.TextureLoader().load( 'backgrounds/espacio.jpg' );
+
+				scene = new THREE.Scene();
+				scene.background = backgroundTexture;
+				camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+
+				var geometry = new THREE.BoxGeometry( 2, 2, 2);
+				var texture = new THREE.TextureLoader().load( 'textures/imagenes.sad' );
+				var material = new THREE.MeshBasicMaterial( { map: texture } );
+
+				cube = new THREE.Mesh( geometry, material );
+				cube.scale.set(-1,1,1);
+				scene.add( cube );
+
+				camera.position.z = 5;
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				animate();
+
+				initAudio();
+			}
+			
+			
+			function animate() {
+				requestAnimationFrame( animate );
+
+				cube.rotation.x += 0.08;
+				cube.rotation.y += 0.06;
+
+				renderer.render( scene, camera );
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function initAudio() {
+				// create an AudioListener and add it to the camera
+				var listener = new THREE.AudioListener();
+				camera.add( listener );
+
+				// create a global audio source
+				var sound = new THREE.Audio( listener );
+
+				// load a sound and set it as the Audio object's buffer
+				var audioLoader = new THREE.AudioLoader();
+				audioLoader.load( 'sounds/jty.mp3', function( buffer ) {
+					sound.setBuffer( buffer );
+					sound.setLoop( true );
+					sound.setVolume( 0.5 );
+					sound.play();
+				});
+			}
+
+		</script>
+	</body>
+</html>
